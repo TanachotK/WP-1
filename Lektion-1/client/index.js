@@ -1,6 +1,6 @@
 const form = document.querySelector(".input-form") //läs in formulär
 const submitBtn = document.querySelector("button[type='submit']") // läs in submit knapp
-
+    
 // These variables will be updated by the checkInputs function
 let InputName = ""
 let InputMessage = ""
@@ -28,7 +28,30 @@ form.addEventListener("submit", async (e) =>  {
      // This check is good for safety, but the button should already handle this
      if (!InputName || !InputMessage) return alert("Fyll i båda fälten!")
 
-     console.log({ namn: InputName, meddelande: InputMessage });
+        try {
+            const response = await fetch("/messages", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ 
+                    namn: InputName, 
+                    meddelande: InputMessage 
+                })
+
+            })
+
+            if (response.ok) {
+                alert("Meddelandet sparades!")
+                form.reset()
+            }   else{
+                alert("Ett fel uppstod!")
+            }
+        }   catch (error) {
+            console.error("Fel:", error)
+            alert("Kunde inte skicka meddelandet")
+        }
+        console.log({ namn: InputName, meddelande: InputMessage });
 
      // Reset form and disable button after submitting
      form.reset();
