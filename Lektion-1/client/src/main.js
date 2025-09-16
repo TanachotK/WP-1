@@ -1,17 +1,19 @@
+import axios from "axios";
+
 const form = document.querySelector(".input-form") //läs in formulär
 const submitBtn = document.querySelector("button[type='submit']") // läs in submit knapp
     
 // These variables will be updated by the checkInputs function
-let InputName = ""
-let InputMessage = ""
+let inputName = ""
+let inputMessage = ""
 
 const checkInputs = () => {
     // Read the current values from the form fields
-    InputName = form.elements.name.value
-    InputMessage = form.elements.message.value
+    inputName = form.elements.name.value
+    inputMessage = form.elements.message.value
     
     // If name or message is missing, disable button. Otherwise, enable it.
-    if (!InputName || !InputMessage) {
+    if (!inputName || !inputMessage) {
         submitBtn.disabled = true
     } else {
         submitBtn.disabled = false
@@ -26,22 +28,21 @@ form.addEventListener("submit", async (e) =>  {
      e.preventDefault() //Hindrar formuläret från att ladda om
 
      // This check is good for safety, but the button should already handle this
-     if (!InputName || !InputMessage) return alert("Fyll i båda fälten!")
+     if (!inputName || !inputMessage) return alert("Fyll i båda fälten!")
 
-        try {
-            const response = await fetch("/messages", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ 
-                    namn: InputName, 
-                    meddelande: InputMessage 
-                })
+        const messageData = {
+          name: inputName,
+          message: inputMessage,
+        };
+      
+      
+      try {
+           const response = await axios.post(
+            "http://localhost:3000/messages",
+            messageData
+           );
 
-            })
-
-            if (response.ok) {
+            if (response.status == 201) {
                 alert("Meddelandet sparades!")
                 form.reset()
             }   else{
@@ -51,7 +52,7 @@ form.addEventListener("submit", async (e) =>  {
             console.error("Fel:", error)
             alert("Kunde inte skicka meddelandet")
         }
-        console.log({ namn: InputName, meddelande: InputMessage });
+        console.log({ name: inputName, message: inputMessage });
 
      // Reset form and disable button after submitting
      form.reset();

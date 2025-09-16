@@ -43,17 +43,17 @@ const loadMessages = () => {
     }
  }
 
-// Hanterar POST-requests till /messages för att spara ett nytt meddelande
+// Hanterar POST-requests till /messages för att spara ett nytt message
 app.post("/messages", (req, res) => {
-  const { namn, meddelande } = req.body // Plockar ut namn och meddelande från request body
+  const { name, message } = req.body // Plockar ut  namne och message från request body
     try{
-        if (!namn || !meddelande) {
+        if (! namne || !message) {
             return res.status(400).json("Name and message are required.");
         }
         const messages = loadMessages() // Laddar befintliga meddelanden
         const newMessage = { // Skapar ett nytt meddelandeobjekt
-            namn,
-            meddelande,
+             namne,
+            message,
             timestamp: new Date().toISOString() // Lägger till en tidsstämpel
         }
 
