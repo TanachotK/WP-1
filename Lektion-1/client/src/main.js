@@ -59,5 +59,13 @@ form.addEventListener("submit", async (e) =>  {
      checkInputs();
 })
 
+window.addEventListener("load", async (e) => {
+    try {
+        const response = await axios.get("http://localhost:3000/messages");
+    }catch (error) {
+
+    }
+})
+
 // Run the check once on page load to set the initial button state
 checkInputs();

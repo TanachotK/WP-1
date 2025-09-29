@@ -43,16 +43,30 @@ const loadMessages = () => {
     }
  }
 
+ const getMessages = () => {
+  const filePath = `${__dirname}/messages.json`
+  try {
+    if (fs.existsSync(filePath)) {
+      const data = fs.readFileSync(filePath, "utf-8")
+      return JSON.parse(data)
+    }
+
+    return []
+  } catch (error) {
+    console.log("Fel vid läsning av meddelanden:", error);
+    return []
+  }
+ };
 // Hanterar POST-requests till /messages för att spara ett nytt message
 app.post("/messages", (req, res) => {
   const { name, message } = req.body // Plockar ut  namne och message från request body
     try{
-        if (! namne || !message) {
+        if (! name || !message) {
             return res.status(400).json("Name and message are required.");
         }
         const messages = loadMessages() // Laddar befintliga meddelanden
         const newMessage = { // Skapar ett nytt meddelandeobjekt
-             namne,
+             name,
             message,
             timestamp: new Date().toISOString() // Lägger till en tidsstämpel
         }
@@ -67,5 +81,16 @@ app.post("/messages", (req, res) => {
     }
 })
 
+
+app.get("/messages", (req,res) => {
+ console.log("Hämta meddelande"); 
+
+ try {
+    const messages = getMessages();
+    console.log
+ }catch (error) {
+
+ }
+});
 // Exporterar appen så att den kan användas i andra filer (t.ex. server.mjs)
 export default app
