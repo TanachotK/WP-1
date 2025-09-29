@@ -7,6 +7,36 @@ const submitBtn = document.querySelector("button[type='submit']") // läs in sub
 let inputName = ""
 let inputMessage = ""
 
+
+const displayMessage = (messages) => {
+    console.log({ messages: messages });
+
+    const messagesContainer = document.querySelector(".messages");
+
+    console.log({ messagesContainer: messagesContainer});
+
+    messagesContainer.innerHTML = "";
+
+    messages.forEach((msg) => {
+        console.log({msg: msg});
+
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "message";
+
+        const date = new Date(msg.timestamp).toLocaleString("sv-SE");
+
+        messageDiv.innerHTML = `
+        <div class="message-header">
+            <strong>${msg.name}</strong>
+            <span class="timestamp">${date}</span>
+        </div>
+        <p class="message-content">${msg.message}</p>
+        `;
+
+        messagesContainer.appendChild(messageDiv);
+
+   });
+};                                                                                                                                                                                                                                                                                                            
 const checkInputs = () => {
     // Read the current values from the form fields
     inputName = form.elements.name.value
@@ -62,6 +92,11 @@ form.addEventListener("submit", async (e) =>  {
 window.addEventListener("load", async (e) => {
     try {
         const response = await axios.get("http://localhost:3000/messages");
+
+        console.log(response.data.data);
+        
+
+        displayMessage(response.data.data)
     }catch (error) {
 
     }

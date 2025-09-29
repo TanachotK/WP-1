@@ -4,6 +4,9 @@ import cors from "cors" // Importerar CORS-paketet för att tillåta cross-origi
 import fs from "fs" // Importerar Node.js filsystem-modul för att läsa och skriva till filer
 import { fileURLToPath } from "url" // Importerar en funktion för att konvertera fil-URL till en vanlig sökväg
 import { dirname, join } from "path" // Importerar en funktion för att få mappsökvägen från en filsökväg
+import {v4 as uuidv4} from "uuid",
+
+
 
 const __filename = fileURLToPath(import.meta.url) // Får den absoluta sökvägen till den aktuella filen
 const __dirname = dirname(__filename) // Får den absoluta sökvägen till mappen som filen ligger i
@@ -44,7 +47,7 @@ const loadMessages = () => {
  }
 
  const getMessages = () => {
-  const filePath = `${__dirname}/messages.json`
+  const filePath = `${__dirname}/message.json`
   try {
     if (fs.existsSync(filePath)) {
       const data = fs.readFileSync(filePath, "utf-8")
@@ -60,7 +63,8 @@ const loadMessages = () => {
 // Hanterar POST-requests till /messages för att spara ett nytt message
 app.post("/messages", (req, res) => {
   const { name, message } = req.body // Plockar ut  namne och message från request body
-    try{
+  const id = uuidv4()  
+  try{
         if (! name || !message) {
             return res.status(400).json("Name and message are required.");
         }
@@ -68,8 +72,9 @@ app.post("/messages", (req, res) => {
         const newMessage = { // Skapar ett nytt meddelandeobjekt
              name,
             message,
-            timestamp: new Date().toISOString() // Lägger till en tidsstämpel
-        }
+            timestamp: new Date().toISOString(), // Lägger till en tidsstämpel
+            id,
+          }
 
         messages.push(newMessage) // Lägger till det nya meddelandet i arrayen
         saveMessages(messages) // Sparar den uppdaterade arrayen till filen
@@ -87,9 +92,13 @@ app.get("/messages", (req,res) => {
 
  try {
     const messages = getMessages();
-    console.log
- }catch (error) {
+    console.log({messages: messages})
+ 
+    res.status(200).json({success: true, data: messages});0
+  }catch (error) {
+    console.log("Fel vid hämtning av meddelanden:", error);
 
+    res.status(500).json({ success: false});
  }
 });
 // Exporterar appen så att den kan användas i andra filer (t.ex. server.mjs)
