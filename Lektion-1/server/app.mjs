@@ -4,7 +4,7 @@ import cors from "cors" // Importerar CORS-paketet för att tillåta cross-origi
 import fs from "fs" // Importerar Node.js filsystem-modul för att läsa och skriva till filer
 import { fileURLToPath } from "url" // Importerar en funktion för att konvertera fil-URL till en vanlig sökväg
 import { dirname, join } from "path" // Importerar en funktion för att få mappsökvägen från en filsökväg
-import {v4 as uuidv4} from "uuid",
+import {v4 as uuidv4} from "uuid"
 
 
 
@@ -20,6 +20,9 @@ app.use(express.json()) // Middleware för att tolka inkommande JSON-data i requ
 app.use(express.urlencoded({extended: false})) // Middleware för att tolka URL-kodad data (från formulär)
 app.use(express.static(join(__dirname, '../client')));
 
+const filePath = `${__dirname}/message.json`;
+
+const data = fs.readFileSync(filePath, "utf-8")
 // Funktion för att ladda meddelanden från message.json
 const loadMessages = () => {
   const filePath = `${__dirname}/message.json` // Sökvägen till meddelandefilen
@@ -38,7 +41,7 @@ const loadMessages = () => {
 
  // Funktion för att spara meddelanden till message.json
  const saveMessages = (messages) => {
-    const filePath = `${__dirname}/message.json` // Sökvägen till meddelandefilen
+   
     try {
         fs.writeFileSync(filePath, JSON.stringify(messages, null, 2)) // Skriver arrayen till filen som en JSON-sträng
     } catch(error) {
@@ -47,7 +50,7 @@ const loadMessages = () => {
  }
 
  const getMessages = () => {
-  const filePath = `${__dirname}/message.json`
+  
   try {
     if (fs.existsSync(filePath)) {
       const data = fs.readFileSync(filePath, "utf-8")
@@ -61,6 +64,27 @@ const loadMessages = () => {
   }
  };
 // Hanterar POST-requests till /messages för att spara ett nytt message
+ const deletMessage = (messageid) => {
+    try {
+      if (!fs.existsSync(filePath)) {
+        return false;
+      }
+
+      let messages = JSON.parse(data)
+
+      const filteredMessages = messages.filter(msg => msg.id !== messageid)
+
+      //Kolla om något faktiskt raerades genom att jämföra längden på varje array
+      if (messages.lenght === filteredMessages.lenght) {
+          return false; //inget meddelande med det ID:t hittades
+      }
+    } catch (error) {
+      
+    }
+  
+ }
+
+
 app.post("/messages", (req, res) => {
   const { name, message } = req.body // Plockar ut  namne och message från request body
   const id = uuidv4()  
@@ -102,4 +126,26 @@ app.get("/messages", (req,res) => {
  }
 });
 // Exporterar appen så att den kan användas i andra filer (t.ex. server.mjs)
+
+app.delete("messages/:id", (req, res) => {
+  const messageid = req.params.id;
+  
+  console.log({ID: messageid});
+
+  try {
+    const deleted = deleteMessage(messageid)
+    
+    if (deleted){
+      res.status(200).json({ success: true});x
+    } else {
+      res.status(404).json({ success: false})
+    }
+  } catch (error) {
+    console.log("Error", error)
+  
+    res.status(500).json({sucess: false});
+  }
+
+
+})
 export default app
