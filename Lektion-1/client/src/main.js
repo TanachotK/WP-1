@@ -31,11 +31,14 @@ const displayMessage = (messages) => {
             <span class="timestamp">${date}</span>
         </div>
         <p class="message-content">${msg.message}</p>
+        <button class="delete-btn" data-id="${msg.id}">Radera</button>
         `;
-
+ 
         messagesContainer.appendChild(messageDiv);
 
-   });
+    });
+//Efter att alla meddelanden har lagts till, läg till event listeners på radera knapparna
+        addDeleteEventlisteners();
 };                                                                                                                                                                                                                                                                                                            
 const checkInputs = () => {
     // Read the current values from the form fields
@@ -89,18 +92,58 @@ form.addEventListener("submit", async (e) =>  {
      checkInputs();
 })
 
-window.addEventListener("load", async (e) => {
+window.addEventListener("load", async (e) => loadMessages()); 
+
+    const loadMessages = async () => {
+
     try {
         const response = await axios.get("http://localhost:3000/messages");
 
-        console.log(response.data.data);
+      console.log({response: response.data.data});
         
 
         displayMessage(response.data.data)
-    }catch (error) {
+    }catch (error) {}
 
+
+};
+
+const addDeleteEventlisteners = () => {
+    //Hitta alla knappar med klassen "delete-btn"
+    const deleteButtons = document.querySelectorAll(".delete-btn")
+
+    //Lägg  till en klick lyssnare
+    deleteButtons.forEach(btn => {
+        btn.addEventListener("click", handleDelete)
+    })
+};
+
+const handleDelete = async (e) => {
+    const messageId = e.target.dataset.id;
+    console.log({messageId: messageId });
+
+    try {
+        //skicka DELETE-request till serven
+        //Vi lägger till ID:t i URL:en
+        const response = await axios.delete(`http://localhost:3000/messages/${meesageid}`)
+
+        if (response.data.success) {
+            alert("Meddelandet raderades!")
+
+            //Ladda in akka neddelanden för att visa uppdaterad lista
+            await loadMessages();
+        } else {
+            alert("Kunde inte radera meddelandet");
+        }
+    } catch (error) {
+        console.log("Fel vid radering:", error)
+        
+        if (error.response && error.response.status === 404){
+            alert("Meddelandet hittades inte")
+        } else {
+            alert("Kunde inte radera meddelandet");
+        }
     }
-})
-
+}
 // Run the check once on page load to set the initial button state
 checkInputs();

@@ -78,8 +78,13 @@ const loadMessages = () => {
       if (messages.lenght === filteredMessages.lenght) {
           return false; //inget meddelande med det ID:t hittades
       }
+
+
+      fs.writeFileSync(filePath, JSON.stringify(filteredMessages, null, 2))
+      return true
     } catch (error) {
-      
+      console.log("Fel vid radering:", error);
+      return false;
     }
   
  }
@@ -112,11 +117,9 @@ app.post("/messages", (req, res) => {
 
 
 app.get("/messages", (req,res) => {
- console.log("Hämta meddelande"); 
 
  try {
     const messages = getMessages();
-    console.log({messages: messages})
  
     res.status(200).json({success: true, data: messages});0
   }catch (error) {
@@ -128,6 +131,7 @@ app.get("/messages", (req,res) => {
 // Exporterar appen så att den kan användas i andra filer (t.ex. server.mjs)
 
 app.delete("messages/:id", (req, res) => {
+  console.log("radera meddelande")
   const messageid = req.params.id;
   
   console.log({ID: messageid});
