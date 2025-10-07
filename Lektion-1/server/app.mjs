@@ -64,18 +64,19 @@ const loadMessages = () => {
   }
  };
 // Hanterar POST-requests till /messages för att spara ett nytt message
- const deletMessage = (messageid) => {
+ const deleteMessage = (messageid) => {
     try {
       if (!fs.existsSync(filePath)) {
         return false;
       }
 
       let messages = JSON.parse(data)
+      console.log(messages)
 
       const filteredMessages = messages.filter(msg => msg.id !== messageid)
 
       //Kolla om något faktiskt raerades genom att jämföra längden på varje array
-      if (messages.lenght === filteredMessages.lenght) {
+      if (messages.length === filteredMessages.length) {
           return false; //inget meddelande med det ID:t hittades
       }
 
@@ -130,14 +131,14 @@ app.get("/messages", (req,res) => {
 });
 // Exporterar appen så att den kan användas i andra filer (t.ex. server.mjs)
 
-app.delete("messages/:id", (req, res) => {
+app.delete("/messages/:id", (req, res) => {
   console.log("radera meddelande")
-  const messageid = req.params.id;
+  const messageId = req.params.id;
   
-  console.log({ID: messageid});
+  console.log({ID: messageId});
 
   try {
-    const deleted = deleteMessage(messageid)
+    const deleted = deleteMessage(messageId)
     
     if (deleted){
       res.status(200).json({ success: true});x

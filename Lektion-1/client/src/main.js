@@ -26,14 +26,15 @@ const displayMessage = (messages) => {
         const date = new Date(msg.timestamp).toLocaleString("sv-SE");
 
         messageDiv.innerHTML = `
-        <div class="message-header">
-            <strong>${msg.name}</strong>
-            <span class="timestamp">${date}</span>
-        </div>
-        <p class="message-content">${msg.message}</p>
-        <button class="delete-btn" data-id="${msg.id}">Radera</button>
-        `;
- 
+            <div class="message-header">
+                <strong>${msg.name}</strong>
+                <span class="timestamp">${date}</span>
+            </div>
+            <p class="message-content">${msg.message}</p>
+            <button class="delete-btn" data-id="${msg.id}">Radera</button>
+            <button class="update-btn" data-id="${msg.id}">updatera</button>
+            `;
+            
         messagesContainer.appendChild(messageDiv);
 
     });
@@ -125,7 +126,7 @@ const handleDelete = async (e) => {
     try {
         //skicka DELETE-request till serven
         //Vi lägger till ID:t i URL:en
-        const response = await axios.delete(`http://localhost:3000/messages/${meesageid}`)
+        const response = await axios.delete(`http://localhost:3000/messages/${messageId}`)
 
         if (response.data.success) {
             alert("Meddelandet raderades!")
